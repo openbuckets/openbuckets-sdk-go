@@ -1,0 +1,400 @@
+openapi: 3.0.3
+info:
+  contact:
+    email: support@openbuckets.io
+    name: Openbuckets.io Team
+    url: https://openbuckets.io
+    x-twitter: openbuckets
+  description: |-
+    The OpenBuckets web-based tool is a powerful utility that allows users to quickly locate open buckets in cloud storage systems through a simple query. In addition, it provides a convenient way to search for various file types across these open buckets, making it an essential tool for security professionals, researchers, and anyone interested in discovering exposed data.
+    This Postman collection aims to showcase the capabilities of OpenBuckets by providing a set of API requests that demonstrate how to leverage its features. By following this collection, you'll learn how to utilize OpenBuckets to identify open buckets and search for specific file types within them.
+  title: OpenBuckets API
+  version: 1.0.0
+servers:
+- url: https://api.openbuckets.io
+security:
+- bearerAuth: []
+tags:
+- description: Operations related to files in cloud storage buckets.
+  name: Files
+- description: Operations related to cloud storage buckets.
+  name: Buckets
+paths:
+  /api/v2/files:
+    get:
+      description: "This request allows you to perform a highly specific search for\
+        \ files within the OpenBuckets database using advanced filters. You can narrow\
+        \ down the search based on various criteria such as keywords, order, size,\
+        \ date range, file extensions, and more."
+      operationId: SearchFiles
+      parameters:
+      - description: multiple keywords."-" denotes stop keywords
+        explode: true
+        in: query
+        name: keywords
+        required: false
+        schema:
+          example: org images -aws
+          type: string
+        style: form
+      - description: "the sorting field for the search results (e.g., \"size\", \"\
+          lastModified\")"
+        explode: true
+        in: query
+        name: order
+        required: false
+        schema:
+          example: size
+          type: string
+        style: form
+      - description: "the sorting direction for the search results (e.g., \"desc\"\
+          \ for descending)"
+        explode: true
+        in: query
+        name: direction
+        required: false
+        schema:
+          example: desc
+          type: string
+        style: form
+      - description: "taken into consideration if you provide any of the allowed values,\
+          \ \"cloudProvider\",\"fileExtension\",\"fileName\",\"fileUrl\",\"fullPath\""
+        explode: true
+        in: query
+        name: field-to-search
+        required: false
+        schema:
+          example: desc
+          type: string
+        style: form
+      - description: "include the full path in the search results (1 for true, 0 for\
+          \ false)"
+        explode: true
+        in: query
+        name: full-path
+        required: false
+        schema:
+          example: 1
+          type: number
+        style: form
+      - description: "comma-separated list of file extensions to include (e.g., \"\
+          pdf,env\")"
+        explode: true
+        in: query
+        name: extensions
+        required: false
+        schema:
+          example: "pdf,.env"
+          type: string
+        style: form
+      - description: UNIX timestamp for the starting date of the last modification
+          range
+        explode: true
+        in: query
+        name: last-modified-from
+        required: false
+        schema:
+          example: "1682965800"
+          type: string
+        style: form
+      - description: UNIX timestamp for the ending date of the last modification rang
+        explode: true
+        in: query
+        name: last-modified-to
+        required: false
+        schema:
+          example: "1693420200"
+          type: string
+        style: form
+      - description: minimum file size in bytes
+        explode: true
+        in: query
+        name: size-from
+        required: false
+        schema:
+          example: "15155035"
+          type: string
+        style: form
+      - description: maximum file size in bytes
+        explode: true
+        in: query
+        name: size-to
+        required: false
+        schema:
+          example: "4538824351471"
+          type: string
+        style: form
+      - description: starting index for pagination
+        explode: true
+        in: query
+        name: start
+        required: false
+        schema:
+          example: 0
+          type: number
+        style: form
+      - description: "number of search results to return per page, based on your role.\
+          \  If you send a value more than the allowed limit, we set it to the allowed\
+          \ limit."
+        explode: true
+        in: query
+        name: limit
+        required: false
+        schema:
+          example: 20
+          type: number
+        style: form
+      - description: comma-separated list of bucket IDs to exclude from the search
+        explode: true
+        in: query
+        name: exclude-buckets
+        required: false
+        schema:
+          example: "45,54"
+          type: string
+        style: form
+      - description: filter search results to specific bucket IDs
+        explode: true
+        in: query
+        name: buckets
+        required: false
+        schema:
+          example: ""
+          type: string
+        style: form
+      - description: "comma-separated list of file extensions to exclude with or without\
+          \ \".\" (e.g., sql, .sql)"
+        explode: true
+        in: query
+        name: stop-extensions
+        required: false
+        schema:
+          example: ".csv,.env"
+          type: string
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FileSearchResults'
+          description: Success
+      security:
+      - bearerAuth: []
+      summary: Search Files
+      tags:
+      - Files
+  /api/v2/buckets:
+    get:
+      description: "This request enables you to perform a targeted search for buckets\
+        \ within the OpenBuckets database using advanced filters. You can narrow down\
+        \ the search based on various criteria such as keywords, bucket type, exact\
+        \ match, sorting, and pagination."
+      operationId: SearchBuckets
+      parameters:
+      - description: "the search keywords to filter bucket names (e.g., \"abg\")"
+        explode: true
+        in: query
+        name: keywords
+        required: false
+        schema:
+          example: abg
+          type: string
+        style: form
+      - description: "the type of bucket to filter (e.g., aws,dos,azure,gcp)"
+        explode: true
+        in: query
+        name: type
+        required: false
+        schema:
+          example: aws
+          type: string
+        style: form
+      - description: "whether to perform an exact match for the keywords (0 for false,\
+          \ 1 for true)"
+        explode: true
+        in: query
+        name: exact
+        required: false
+        schema:
+          example: 0
+          type: number
+        style: form
+      - description: starting index for pagination
+        explode: true
+        in: query
+        name: start
+        required: false
+        schema:
+          example: 0
+          type: number
+        style: form
+      - description: number of search results to return per page
+        explode: true
+        in: query
+        name: limit
+        required: false
+        schema:
+          example: 1000
+          type: number
+        style: form
+      - description: "the sorting field for the search results (e.g., \"fileCount\"\
+          \ for sorting by file count)"
+        explode: true
+        in: query
+        name: order
+        required: false
+        schema:
+          example: fileCount
+          type: string
+        style: form
+      - description: "the sorting direction for the search results (e.g., \"asc\"\
+          \ for ascending)"
+        explode: true
+        in: query
+        name: direction
+        required: false
+        schema:
+          example: asc
+          type: string
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BucketSearchResults'
+          description: Success
+      security:
+      - bearerAuth: []
+      summary: Search Buckets
+      tags:
+      - Buckets
+components:
+  schemas:
+    Bucket:
+      example:
+        name: name
+        id: 6
+        type: type
+        fileCount: 1
+      properties:
+        id:
+          description: Unique identifier for the bucket
+          type: integer
+        name:
+          description: Name of the bucket
+          type: string
+        fileCount:
+          description: Number of files in the bucket
+          type: integer
+        type:
+          description: "Type of cloud storage (aws, azure, etc)"
+          type: string
+      type: object
+    File:
+      example:
+        bucket: bucket
+        fullPath: fullPath
+        container: container
+        filename: filename
+        size: 1
+        bucketId: 6
+        id: id
+        lastModified: 5
+        type: type
+        url: https://openapi-generator.tech
+      properties:
+        id:
+          description: Unique identifier for the file
+          type: string
+        bucket:
+          description: Name of the bucket
+          type: string
+        bucketId:
+          description: Unique identifier for the bucket
+          type: integer
+        filename:
+          description: Name of the file
+          type: string
+        fullPath:
+          description: Full path to the file
+          type: string
+        url:
+          description: URL to access the file
+          format: uri
+          type: string
+        size:
+          description: Size of the file in bytes
+          type: integer
+        type:
+          description: Type of cloud storage
+          type: string
+        lastModified:
+          description: Timestamp when file was last modified
+          type: integer
+        container:
+          description: Storage container name
+          type: string
+      type: object
+    BucketSearchResults:
+      example:
+        total: 0
+        results:
+        - name: name
+          id: 6
+          type: type
+          fileCount: 1
+        - name: name
+          id: 6
+          type: type
+          fileCount: 1
+      properties:
+        total:
+          description: Total number of matching buckets
+          type: integer
+        results:
+          items:
+            $ref: '#/components/schemas/Bucket'
+          type: array
+      type: object
+    FileSearchResults:
+      example:
+        total: 0
+        results:
+        - bucket: bucket
+          fullPath: fullPath
+          container: container
+          filename: filename
+          size: 1
+          bucketId: 6
+          id: id
+          lastModified: 5
+          type: type
+          url: https://openapi-generator.tech
+        - bucket: bucket
+          fullPath: fullPath
+          container: container
+          filename: filename
+          size: 1
+          bucketId: 6
+          id: id
+          lastModified: 5
+          type: type
+          url: https://openapi-generator.tech
+      properties:
+        total:
+          description: Total number of matching files
+          type: integer
+        results:
+          items:
+            $ref: '#/components/schemas/File'
+          type: array
+      type: object
+  securitySchemes:
+    bearerAuth:
+      bearerFormat: auth-scheme
+      description: "Bearer HTTP authentication. Allowed headers -- Authorization:\
+        \ Bearer <api_key>"
+      scheme: bearer
+      type: http
